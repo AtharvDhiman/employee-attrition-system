@@ -37,8 +37,9 @@ def create_app(config_class=Config):
     with app.app_context():
         try:
             os.makedirs(app.instance_path, exist_ok=True)
+            # Import models before create_all to register them with metadata
+            from app.models import User, Employee, Prediction
             db.create_all()
-            from app.models.user import User
             from werkzeug.security import generate_password_hash
             if not User.query.filter_by(username='hr_admin').first():
                 default_password = os.environ.get('DEFAULT_ADMIN_PASSWORD', 'password123')
@@ -143,11 +144,11 @@ def init_db_command():
     except OSError:
         pass
 
+    from app.models import User, Employee, Prediction
     db.create_all()
     click.echo('Initialized the database.')
 
     # Prepopulate default HR Manager if database is empty
-    from app.models.user import User
     from werkzeug.security import generate_password_hash
     if not User.query.filter_by(username='hr_admin').first():
         default_password = os.environ.get('DEFAULT_ADMIN_PASSWORD', 'password123')
