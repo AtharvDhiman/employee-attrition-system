@@ -140,7 +140,11 @@ def download_template():
 @prediction_bp.route("/download/<string:filename>")
 @login_required
 def download_report(filename):
-    reports_dir = os.path.abspath(os.path.join(current_app.root_path, "..", "reports"))
+    is_vercel = os.environ.get("VERCEL", "false") == "true" or os.environ.get("NOW_REGION") is not None
+    if is_vercel:
+        reports_dir = "/tmp"
+    else:
+        reports_dir = os.path.abspath(os.path.join(current_app.root_path, "..", "reports"))
     return send_from_directory(reports_dir, filename, as_attachment=True)
 
 @prediction_bp.route("/batch", methods=['GET', 'POST'])
@@ -410,7 +414,11 @@ def batch():
                 return redirect(url_for('prediction.batch'))
                 
             # Generate Report CSV
-            reports_dir = os.path.abspath(os.path.join(current_app.root_path, "..", "reports"))
+            is_vercel = os.environ.get("VERCEL", "false") == "true" or os.environ.get("NOW_REGION") is not None
+            if is_vercel:
+                reports_dir = "/tmp"
+            else:
+                reports_dir = os.path.abspath(os.path.join(current_app.root_path, "..", "reports"))
             os.makedirs(reports_dir, exist_ok=True)
             
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -432,7 +440,11 @@ def batch():
 @prediction_bp.route("/batch-results/<string:filename>")
 @login_required
 def batch_results(filename):
-    reports_dir = os.path.abspath(os.path.join(current_app.root_path, "..", "reports"))
+    is_vercel = os.environ.get("VERCEL", "false") == "true" or os.environ.get("NOW_REGION") is not None
+    if is_vercel:
+        reports_dir = "/tmp"
+    else:
+        reports_dir = os.path.abspath(os.path.join(current_app.root_path, "..", "reports"))
     report_path = os.path.join(reports_dir, filename)
     
     if not os.path.exists(report_path):
