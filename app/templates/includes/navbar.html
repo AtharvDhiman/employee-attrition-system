@@ -4,7 +4,11 @@
             <i class="fa-solid fa-chart-line logo-icon"></i>
             <span>Retain<span class="logo-accent">AI</span></span>
         </a>
-        <ul class="nav-links">
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+            <i class="fa-solid fa-bars menu-icon"></i>
+            <i class="fa-solid fa-xmark close-icon" style="display: none;"></i>
+        </button>
+        <ul class="nav-links" id="navLinks">
             {% if current_user.is_authenticated %}
                 <li><a href="{{ url_for('dashboard.index') }}" class="nav-link"><i class="fa-solid fa-gauge"></i> Dashboard</a></li>
                 <li><a href="{{ url_for('dashboard.cohort_analytics') }}" class="nav-link"><i class="fa-solid fa-people-group"></i> Cohorts</a></li>
@@ -22,3 +26,18 @@
         </ul>
     </div>
 </nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggle = document.getElementById('navToggle');
+        const links = document.getElementById('navLinks');
+        if (toggle && links) {
+            toggle.addEventListener('click', function() {
+                links.classList.toggle('active');
+                const isExpanded = links.classList.contains('active');
+                toggle.querySelector('.menu-icon').style.display = isExpanded ? 'none' : 'block';
+                toggle.querySelector('.close-icon').style.display = isExpanded ? 'block' : 'none';
+            });
+        }
+    });
+</script>

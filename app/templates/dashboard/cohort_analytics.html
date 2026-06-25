@@ -84,60 +84,68 @@
         <div class="card-header-clean" style="border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1.5rem;">
             <h2 style="font-family: var(--font-heading); font-size: 1.3rem; color: var(--secondary-color);"><i class="fa-solid fa-table-columns"></i> Complete Cohort Feature Matrix</h2>
         </div>
-        <table class="data-table">
-            <thead>
-                <tr style="background-color: var(--bg-color);">
-                    <th>Workforce Metric / Attribute</th>
-                    <th style="color: var(--danger-color); font-weight: 700; text-align: center;">High Attrition Risk Cohort</th>
-                    <th style="color: var(--success-color); font-weight: 700; text-align: center;">Low Attrition Risk Cohort</th>
-                    <th style="text-align: center;">Variance % / Absolute Diff</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="font-semibold">Average Monthly Income</td>
-                    <td style="text-align: center; font-weight: 600;">${{ "{:,.2f}".format(stats.high.avg_income) }}</td>
-                    <td style="text-align: center; font-weight: 600;">${{ "{:,.2f}".format(stats.low.avg_income) }}</td>
-                    <td style="text-align: center; font-weight: 600;" id="diff-income">Calculating...</td>
-                </tr>
-                <tr>
-                    <td class="font-semibold">Overtime Rate (%)</td>
-                    <td style="text-align: center;">{{ stats.high.ot_rate }}%</td>
-                    <td style="text-align: center;">{{ stats.low.ot_rate }}%</td>
-                    <td style="text-align: center; font-weight: 600;" id="diff-ot">Calculating...</td>
-                </tr>
-                <tr>
-                    <td class="font-semibold">Average Job Satisfaction</td>
-                    <td style="text-align: center;">{{ stats.high.avg_satisfaction }} / 4</td>
-                    <td style="text-align: center;">{{ stats.low.avg_satisfaction }} / 4</td>
-                    <td style="text-align: center; font-weight: 600;" id="diff-satisfaction">Calculating...</td>
-                </tr>
-                <tr>
-                    <td class="font-semibold">Average Environment Satisfaction</td>
-                    <td style="text-align: center;">{{ stats.high.avg_env_satisfaction }} / 4</td>
-                    <td style="text-align: center;">{{ stats.low.avg_env_satisfaction }} / 4</td>
-                    <td style="text-align: center; font-weight: 600;" id="diff-env">Calculating...</td>
-                </tr>
-                <tr>
-                    <td class="font-semibold">Average Work-Life Balance</td>
-                    <td style="text-align: center;">{{ stats.high.avg_work_life }} / 4</td>
-                    <td style="text-align: center;">{{ stats.low.avg_work_life }} / 4</td>
-                    <td style="text-align: center; font-weight: 600;" id="diff-balance">Calculating...</td>
-                </tr>
-                <tr>
-                    <td class="font-semibold">Average Distance From Home (miles)</td>
-                    <td style="text-align: center;">{{ stats.high.avg_distance }} mi</td>
-                    <td style="text-align: center;">{{ stats.low.avg_distance }} mi</td>
-                    <td style="text-align: center; font-weight: 600;" id="diff-distance">Calculating...</td>
-                </tr>
-                <tr>
-                    <td class="font-semibold">Average Years at Company</td>
-                    <td style="text-align: center;">{{ stats.high.avg_years }} years</td>
-                    <td style="text-align: center;">{{ stats.low.avg_years }} years</td>
-                    <td style="text-align: center; font-weight: 600;" id="diff-years">Calculating...</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr style="background-color: var(--bg-color);">
+                        <th>Workforce Metric / Attribute</th>
+                        <th style="color: var(--danger-color); font-weight: 700; text-align: center;">High Attrition Risk Cohort</th>
+                        <th style="color: var(--success-color); font-weight: 700; text-align: center;">Low Attrition Risk Cohort</th>
+                        <th style="text-align: center;">Variance % / Absolute Diff</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="font-semibold">Average Monthly Income</td>
+                        <td style="text-align: center; font-weight: 600;">${{ "{:,.2f}".format(stats.high.avg_income) }}</td>
+                        <td style="text-align: center; font-weight: 600;">${{ "{:,.2f}".format(stats.low.avg_income) }}</td>
+                        <td style="text-align: center; font-weight: 600;" id="diff-income">Calculating...</td>
+                    </tr>
+                    <tr>
+                        <td class="font-semibold">Overtime Rate (%)</td>
+                        <td style="text-align: center;">{{ stats.high.ot_rate }}%</td>
+                        <td style="text-align: center;">{{ stats.low.ot_rate }}%</td>
+                        <td style="text-align: center; font-weight: 600;" id="diff-ot">Calculating...</td>
+                    </tr>
+                    <tr>
+                        <td class="font-semibold">Average Job Satisfaction</td>
+                        <td style="text-align: center;">{{ stats.high.avg_satisfaction }}/4</td>
+                        <td style="text-align: center;">{{ stats.low.avg_satisfaction }}/4</td>
+                        <td style="text-align: center; font-weight: 600;" id="diff-satisfaction">Calculating...</td>
+                    </tr>
+                    <tr>
+                        <td class="font-semibold">Average Work Life Balance</td>
+                        <td style="text-align: center;">{{ stats.high.avg_wlb }}/4</td>
+                        <td style="text-align: center;">{{ stats.low.avg_wlb }}/4</td>
+                        <td style="text-align: center; font-weight: 600;" id="diff-wlb">Calculating...</td>
+                    </tr>
+                    <tr>
+                        <td class="font-semibold">Average Environmental Satisfaction</td>
+                        <td style="text-align: center;">{{ stats.high.avg_env }}/4</td>
+                        <td style="text-align: center;">{{ stats.low.avg_env }}/4</td>
+                        <td style="text-align: center; font-weight: 600;" id="diff-env">Calculating...</td>
+                    </tr>
+                    <tr>
+                        <td class="font-semibold">Average Age</td>
+                        <td style="text-align: center;">{{ stats.high.avg_age }} years</td>
+                        <td style="text-align: center;">{{ stats.low.avg_age }} years</td>
+                        <td style="text-align: center; font-weight: 600;" id="diff-age">Calculating...</td>
+                    </tr>
+                    <tr>
+                        <td class="font-semibold">Average Distance From Home</td>
+                        <td style="text-align: center;">{{ stats.high.avg_distance }} mi</td>
+                        <td style="text-align: center;">{{ stats.low.avg_distance }} mi</td>
+                        <td style="text-align: center; font-weight: 600;" id="diff-distance">Calculating...</td>
+                    </tr>
+                    <tr>
+                        <td class="font-semibold">Average Years at Company</td>
+                        <td style="text-align: center;">{{ stats.high.avg_years }} years</td>
+                        <td style="text-align: center;">{{ stats.low.avg_years }} years</td>
+                        <td style="text-align: center; font-weight: 600;" id="diff-years">Calculating...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <!-- Recommendations Playbook -->

@@ -71,58 +71,60 @@
     <!-- Employees List Table -->
     <div class="dashboard-card list-card">
         {% if employees %}
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Employee ID</th>
-                        <th>Name</th>
-                        <th>Department</th>
-                        <th>Job Role</th>
-                        <th>Income</th>
-                        <th>Overtime</th>
-                        <th class="text-right">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for emp in employees %}
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
                         <tr>
-                            <td class="font-semibold">{{ emp.employee_id }}</td>
-                            <td>{{ emp.full_name }}</td>
-                            <td>{{ emp.department or 'N/A' }}</td>
-                            <td>{{ emp.job_role or 'N/A' }}</td>
-                            <td>
-                                {% if emp.monthly_income %}
-                                    ${{ "{:,.2f}".format(emp.monthly_income) }}
-                                {% else %}
-                                    N/A
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if emp.overtime %}
-                                    <span class="badge danger">Yes</span>
-                                {% else %}
-                                    <span class="badge secondary">No</span>
-                                {% endif %}
-                            </td>
-                            <td class="text-right">
-                                <div class="actions-group">
-                                    <a href="{{ url_for('employee.detail', employee_id=emp.employee_id) }}" class="btn-action view" title="View Profile">
-                                        <i class="fa-solid fa-eye"></i> View
-                                    </a>
-                                    <a href="{{ url_for('employee.edit_employee', employee_id=emp.employee_id) }}" class="btn-action edit" title="Edit Profile">
-                                        <i class="fa-solid fa-user-pen"></i> Edit
-                                    </a>
-                                    <form method="POST" action="{{ url_for('employee.delete_employee', employee_id=emp.employee_id) }}" style="display: inline-block;" onsubmit="return confirm('Are you sure you want to delete employee {{ emp.full_name }}? This will permanently remove their records and prediction history.');">
-                                        <button type="submit" class="btn-action delete" title="Delete Profile">
-                                            <i class="fa-solid fa-trash-can"></i> Delete
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
+                            <th>Employee ID</th>
+                            <th>Name</th>
+                            <th>Department</th>
+                            <th>Job Role</th>
+                            <th>Income</th>
+                            <th>Overtime</th>
+                            <th class="text-right">Actions</th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {% for emp in employees %}
+                            <tr>
+                                <td class="font-semibold">{{ emp.employee_id }}</td>
+                                <td>{{ emp.full_name }}</td>
+                                <td>{{ emp.department or 'N/A' }}</td>
+                                <td>{{ emp.job_role or 'N/A' }}</td>
+                                <td>
+                                    {% if emp.monthly_income %}
+                                        ${{ "{:,.2f}".format(emp.monthly_income) }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if emp.overtime %}
+                                        <span class="badge danger">Yes</span>
+                                    {% else %}
+                                        <span class="badge secondary">No</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-right">
+                                    <div class="actions-group">
+                                        <a href="{{ url_for('employee.detail', employee_id=emp.employee_id) }}" class="btn-action view" title="View Profile">
+                                            <i class="fa-solid fa-eye"></i> View
+                                        </a>
+                                        <a href="{{ url_for('employee.edit_employee', employee_id=emp.employee_id) }}" class="btn-action edit" title="Edit Profile">
+                                            <i class="fa-solid fa-user-pen"></i> Edit
+                                        </a>
+                                        <form method="POST" action="{{ url_for('employee.delete_employee', employee_id=emp.employee_id) }}" style="display: inline-block;" onsubmit="return confirm('Are you sure you want to delete employee {{ emp.full_name }}? This will permanently remove their records and prediction history.');">
+                                            <button type="submit" class="btn-action delete" title="Delete Profile">
+                                                <i class="fa-solid fa-trash-can"></i> Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
 
             <!-- Pagination Controls -->
             {% if pagination and pagination.pages > 1 %}

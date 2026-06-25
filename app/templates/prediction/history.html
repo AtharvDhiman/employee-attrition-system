@@ -17,51 +17,53 @@
     <!-- Predictions History Table -->
     <div class="dashboard-card list-card">
         {% if predictions %}
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Date & Time</th>
-                        <th>Employee ID</th>
-                        <th>Risk Score</th>
-                        <th>Result Class</th>
-                        <th>Recommended Actions Summary</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for pred in predictions %}
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
                         <tr>
-                            <td class="font-semibold">{{ pred.run_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-                            <td>
-                                <a href="{{ url_for('employee.detail', employee_id=pred.employee_id) }}" class="emp-link">
-                                    {{ pred.employee_id }}
-                                </a>
-                            </td>
-                            <td>
-                                <span class="score-badge {% if pred.risk_score >= 0.5 %}high{% else %}low{% endif %}">
-                                    {{ (pred.risk_score * 100)|int }}%
-                                </span>
-                            </td>
-                            <td>
-                                {% if pred.prediction_class %}
-                                    <span class="badge danger">High Risk</span>
-                                {% else %}
-                                    <span class="badge success">Low Risk</span>
-                                {% endif %}
-                            </td>
-                            <td class="text-muted text-sm">
-                                {% if pred.recommended_actions %}
-                                    {{ pred.recommended_actions.split('\n')[0] }}
-                                    {% if pred.recommended_actions.split('\n')|length > 1 %}
-                                        ...
-                                    {% endif %}
-                                {% else %}
-                                    N/A
-                                {% endif %}
-                            </td>
+                            <th>Date & Time</th>
+                            <th>Employee ID</th>
+                            <th>Risk Score</th>
+                            <th>Result Class</th>
+                            <th>Recommended Actions Summary</th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {% for pred in predictions %}
+                            <tr>
+                                <td class="font-semibold">{{ pred.run_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                                <td>
+                                    <a href="{{ url_for('employee.detail', employee_id=pred.employee_id) }}" class="emp-link">
+                                        {{ pred.employee_id }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <span class="score-badge {% if pred.risk_score >= 0.5 %}high{% else %}low{% endif %}">
+                                        {{ (pred.risk_score * 100)|int }}%
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if pred.prediction_class %}
+                                        <span class="badge danger">High Risk</span>
+                                    {% else %}
+                                        <span class="badge success">Low Risk</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-muted text-sm">
+                                    {% if pred.recommended_actions %}
+                                        {{ pred.recommended_actions.split('\n')[0] }}
+                                        {% if pred.recommended_actions.split('\n')|length > 1 %}
+                                            ...
+                                        {% endif %}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         {% else %}
             <div class="empty-state">
                 <i class="fa-solid fa-list-check"></i>

@@ -46,40 +46,42 @@
                 </div>
                 <div class="card-body">
                     {% if recent_predictions %}
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Employee ID</th>
-                                    <th>Risk Score</th>
-                                    <th>Risk Category</th>
-                                    <th>Date</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for pred in recent_predictions %}
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
                                     <tr>
-                                        <td>
-                                            <a href="{{ url_for('employee.detail', employee_id=pred.employee_id) }}" class="emp-link">
-                                                {{ pred.employee_id }}
-                                            </a>
-                                        </td>
-                                        <td>
-                                            <span class="score-badge {% if pred.risk_score >= 0.5 %}high{% else %}low{% endif %}">
-                                                {{ (pred.risk_score * 100)|int }}%
-                                            </span>
-                                        </td>
-                                        <td>
-                                            {% if pred.prediction_class %}
-                                                <span class="badge danger">High Risk</span>
-                                            {% else %}
-                                                <span class="badge success">Low Risk</span>
-                                            {% endif %}
-                                        </td>
-                                        <td>{{ pred.run_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                        <th>Employee ID</th>
+                                        <th>Risk Score</th>
+                                        <th>Risk Category</th>
+                                        <th>Date</th>
                                     </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {% for pred in recent_predictions %}
+                                        <tr>
+                                            <td>
+                                                <a href="{{ url_for('employee.detail', employee_id=pred.employee_id) }}" class="emp-link">
+                                                    {{ pred.employee_id }}
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <span class="score-badge {% if pred.risk_score >= 0.5 %}high{% else %}low{% endif %}">
+                                                    {{ (pred.risk_score * 100)|int }}%
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {% if pred.prediction_class %}
+                                                    <span class="badge danger">High Risk</span>
+                                                {% else %}
+                                                    <span class="badge success">Low Risk</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ pred.run_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     {% else %}
                         <div class="empty-state">
                             <i class="fa-solid fa-folder-open"></i>
