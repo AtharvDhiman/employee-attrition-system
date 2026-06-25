@@ -36,7 +36,11 @@ def create_app(config_class=Config):
     # Initialize database tables automatically on app start
     with app.app_context():
         try:
-            os.makedirs(app.instance_path, exist_ok=True)
+            if not app.config.get('IS_VERCEL'):
+                try:
+                    os.makedirs(app.instance_path, exist_ok=True)
+                except OSError:
+                    pass
             # Import models before create_all to register them with metadata
             from app.models import User, Employee, Prediction
             db.create_all()
