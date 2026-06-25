@@ -217,7 +217,7 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById('diff-ot').innerHTML = `<span style="color: ${otDiff > 0 ? 'var(--danger-color)' : 'var(--success-color)'}">${otDiff > 0 ? '+' : ''}${otDiff}%</span>`;
     document.getElementById('diff-satisfaction').innerHTML = `<span style="color: ${satDiff < 0 ? 'var(--danger-color)' : 'var(--success-color)'}">${satDiff < 0 ? '' : '+'}${satDiff}</span>`;
     document.getElementById('diff-env').innerHTML = `<span style="color: ${envDiff < 0 ? 'var(--danger-color)' : 'var(--success-color)'}">${envDiff < 0 ? '' : '+'}${envDiff}</span>`;
-    document.getElementById('diff-balance').innerHTML = `<span style="color: ${balDiff < 0 ? 'var(--danger-color)' : 'var(--success-color)'}">${balDiff < 0 ? '' : '+'}${balDiff}</span>`;
+    document.getElementById('diff-wlb').innerHTML = `<span style="color: ${balDiff < 0 ? 'var(--danger-color)' : 'var(--success-color)'}">${balDiff < 0 ? '' : '+'}${balDiff}</span>`;
     document.getElementById('diff-distance').innerHTML = `<span style="color: ${distDiff > 0 ? 'var(--danger-color)' : 'var(--success-color)'}">${distDiff > 0 ? '+' : ''}${distDiff} mi</span>`;
     document.getElementById('diff-years').innerHTML = `<span style="color: ${yearsDiff < 0 ? 'var(--danger-color)' : 'var(--success-color)'}">${yearsDiff < 0 ? '' : '+'}${yearsDiff} yrs</span>`;
 
