@@ -1,0 +1,485 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Profile - {{ employee.full_name }}{% endblock %}
+
+{% block content %}
+<div class="container-padded">
+    <!-- Back to directory link -->
+    <a href="{{ url_for('employee.list_employees') }}" class="back-link">
+        <i class="fa-solid fa-arrow-left"></i> Back to Employees Directory
+    </a>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} margin-top">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="profile-layout">
+        <!-- Profile info card -->
+        <div class="profile-card flex-2">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <i class="fa-solid fa-user-tie"></i>
+                </div>
+                <div>
+                    <h1>{{ employee.full_name }}</h1>
+                    <p class="emp-subtitle">ID: {{ employee.employee_id }} | Registered: {{ employee.created_at.strftime('%Y-%m-%d') }}</p>
+                </div>
+            </div>
+
+            <!-- SECTION 1: Core Profile -->
+            <div class="form-section-title margin-top"><i class="fa-solid fa-address-card"></i> Core Profile</div>
+            <div class="profile-grid">
+                <div class="grid-item">
+                    <span class="grid-label">Employee Number</span>
+                    <span class="grid-value">{{ employee.employee_number or 'N/A' }}</span>
+                </div>
+                <div class="grid-item">
+                    <span class="grid-label">Age</span>
+                    <span class="grid-value">{{ employee.age or 'N/A' }}</span>
+                </div>
+                <div class="grid-item">
+                    <span class="grid-label">Gender</span>
+                    <span class="grid-value">{{ employee.gender or 'N/A' }}</span>
+                </div>
+                <div class="grid-item">
+                    <span class="grid-label">Marital Status</span>
+                    <span class="grid-value">{{ employee.marital_status or 'N/A' }}</span>
+                </div>
+            </div>
+
+            <!-- SECTION 2: Professional Details -->
+            <div class="form-section-title margin-top"><i class="fa-solid fa-briefcase"></i> Job & Experience</div>
+            <div class="profile-grid">
+                <div class="grid-item">
+                    <span class="grid-label">Department</span>
+                    <span class="grid-value">{{ employee.department or 'N/A' }}</span>
+                </div>
+                <div class="grid-item">
+                    <span class="grid-label">Job Role</span>
+                    <span class="grid-value">{{ employee.job_role or 'N/A' }}</span>
+                </div>
+                <div class="grid-item">
+                    <span class="grid-label">Job Level</span>
+                    <span class="grid-value">{{ employee.job_level or 'N/A' }}</span>
+                </div>
+                <div class="grid-item">
+                    <span class="grid-label">Business Travel</span>
+                    <span class="grid-value">{{ employee.business_travel or 'N/A' }}</span>
+                </div>
+                <div class="grid-item">
+                    <span class="grid-label">Years at Company</span>
+                    <span class="grid-value">{{ employee.years_at_company or 0 }} years</span>
+                </div>
+                <div class="grid-item">
+                    <span class="grid-label">Years in Role</span>
+                    <span class="grid-value">{{ employee.years_in_current_role or 0 }} years</span>
+                </div>
+                <div class="grid-item">
+                    <span class="grid-label">Years Since Promotion</span>
+                    <span class="grid-value">{{ employee.years_since_last_promotion or 0 }} years</span>
+                </div>
+                <div class="grid-item">
+                    <span class="grid-label">Years With Manager</span>
+                    <span class="grid-value">{{ employee.years_with_curr_manager or 0 }} years</span>
+                </div>
+                <div class="grid-item">
+                    <span class="grid-label">Total Working Years</span>
+                    <span class="grid-value">{{ employee.total_working_years or 0 }} years</span>
+                </div>
+                <div class="grid-item">
+                    <span class="grid-label">Companies Worked</span>
+                    <span class="grid-value">{{ employee.num_companies_worked or 0 }}</span>
+                </div>
+            </div>
+
+            <!-- SECTION 3: Compensation & Rates -->
+            <div class="form-section-title margin-top"><i class="fa-solid fa-money-bill-wave"></i> Compensation & Rates</div>
+            <div class="profile-grid">
+                <div class="grid-item">
+                    <span class="grid-label">Monthly Income</span>
+                    <span class="grid-value">
+                        {% if employee.monthly_income %}
+                            ${{ "{:,.2f}".format(employee.monthly_income) }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="grid-item">
+                    <span class="grid-label">Percent Salary Hike</span>
+                    <span class="grid-value">{{ employee.percent_salary_hike or 0 }}%</span>
+                </div>
+                <div class="grid-item">
+                    <span class="grid-label">Stock Option Level</span>
+                    <span class="grid-value">{{ employee.stock_option_level or 0 }}</span>
+                </div>
+                <div class="grid-item">
+                    <span class="grid-label">Works Overtime</span>
+                    <span class="grid-value">
+                        {% if employee.overtime %}
+                            <span class="badge danger">Yes</span>
+                        {% else %}
+                            <span class="badge secondary">No</span>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="grid-item">
+                    <span class="grid-label">Daily Rate</span>
+                    <span class="grid-value">${{ employee.daily_rate or 0 }}</span>
+                </div>
+                <div class="grid-item">
+                    <span class="grid-label">Hourly Rate</span>
+                    <span class="grid-value">${{ employee.hourly_rate or 0 }}</span>
+                </div>
+                <div class="grid-item">
+                    <span class="grid-label">Monthly Rate</span>
+                    <span class="grid-value">${{ employee.monthly_rate or 0 }}</span>
+                </div>
+                <div class="grid-item">
+                    <span class="grid-label">Distance From Home</span>
+                    <span class="grid-value">{{ employee.distance_from_home or 0 }} miles</span>
+                </div>
+            </div>
+
+            <!-- SECTION 4: Engagement & Education -->
+            <div class="form-section-title margin-top"><i class="fa-solid fa-graduation-cap"></i> Engagement & Education</div>
+            <div class="profile-grid">
+                <div class="grid-item">
+                    <span class="grid-label">Education Level</span>
+                    <span class="grid-value">{{ employee.education or 'N/A' }}/5</span>
+                </div>
+                <div class="grid-item">
+                    <span class="grid-label">Education Field</span>
+                    <span class="grid-value">{{ employee.education_field or 'N/A' }}</span>
+                </div>
+                <div class="grid-item">
+                    <span class="grid-label">Job Satisfaction</span>
+                    <span class="grid-value">
+                        {% if employee.job_satisfaction %}
+                            <div class="score-stars">
+                                {% for i in range(employee.job_satisfaction) %}★{% endfor %}
+                                <span class="score-label">({{ employee.job_satisfaction }}/4)</span>
+                            </div>
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="grid-item">
+                    <span class="grid-label">Work Life Balance</span>
+                    <span class="grid-value">
+                        {% if employee.work_life_balance %}
+                            <div class="score-stars">
+                                {% for i in range(employee.work_life_balance) %}★{% endfor %}
+                                <span class="score-label">({{ employee.work_life_balance }}/4)</span>
+                            </div>
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="grid-item">
+                    <span class="grid-label">Environment Satisfaction</span>
+                    <span class="grid-value">
+                        {% if employee.environment_satisfaction %}
+                            <div class="score-stars">
+                                {% for i in range(employee.environment_satisfaction) %}★{% endfor %}
+                                <span class="score-label">({{ employee.environment_satisfaction }}/4)</span>
+                            </div>
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="grid-item">
+                    <span class="grid-label">Relationship Satisfaction</span>
+                    <span class="grid-value">
+                        {% if employee.relationship_satisfaction %}
+                            <div class="score-stars">
+                                {% for i in range(employee.relationship_satisfaction) %}★{% endfor %}
+                                <span class="score-label">({{ employee.relationship_satisfaction }}/4)</span>
+                            </div>
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="grid-item">
+                    <span class="grid-label">Job Involvement</span>
+                    <span class="grid-value">{{ employee.job_involvement or 'N/A' }}/4</span>
+                </div>
+                <div class="grid-item">
+                    <span class="grid-label">Performance Rating</span>
+                    <span class="grid-value">{{ employee.performance_rating or 'N/A' }}/4</span>
+                </div>
+                <div class="grid-item">
+                    <span class="grid-label">Training Times Last Year</span>
+                    <span class="grid-value">{{ employee.training_times_last_year or 0 }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prediction triggers and latest predictions -->
+        <div class="prediction-card flex-1">
+            <div class="card-header-clean">
+                <h2>Predictive Attrition Model</h2>
+            </div>
+            
+            <div class="prediction-action-block">
+                <form action="{{ url_for('prediction.run_prediction', employee_id=employee.employee_id) }}" method="POST">
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Calculate Attrition Risk
+                    </button>
+                </form>
+            </div>
+
+            {% if employee.predictions %}
+                {% set latest = employee.predictions|sort(attribute='run_at', reverse=true)|first %}
+                <div class="latest-score-display margin-top">
+                    <h3>Latest Prediction Status</h3>
+                    
+                    <div class="radial-score-wrapper">
+                        <span class="radial-percentage {% if latest.risk_score >= 0.5 %}high{% else %}low{% endif %}">
+                            {{ (latest.risk_score * 100)|int }}%
+                        </span>
+                        <span class="radial-label">Attrition Probability</span>
+                    </div>
+
+                    <div class="prediction-verdict margin-top">
+                        {% if latest.prediction_class %}
+                            <div class="alert alert-danger font-semibold">
+                                <i class="fa-solid fa-triangle-exclamation"></i> HIGH ATTRITION RISK
+                            </div>
+                        {% else %}
+                            <div class="alert alert-success font-semibold">
+                                <i class="fa-solid fa-circle-check"></i> LOW ATTRITION RISK
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- AI Explanation Section -->
+                    <div class="ai-explanation-card">
+                        <div class="ai-explanation-title">
+                            <i class="fa-solid fa-microchip"></i>
+                            {% if latest.features_snapshot and latest.features_snapshot.get('_local_drivers') %}
+                                {% if latest.prediction_class %}
+                                    Top Attrition Risk Factors
+                                {% else %}
+                                    Key Retention Pillars
+                                {% endif %}
+                            {% else %}
+                                AI Explanations
+                            {% endif %}
+                        </div>
+
+                        {% if latest.features_snapshot and latest.features_snapshot.get('_local_drivers') %}
+                            <div class="drivers-list">
+                                {% for driver in latest.features_snapshot.get('_local_drivers') %}
+                                    <div class="driver-item">
+                                        <div class="driver-header">
+                                            <span class="driver-name">{{ driver.name }}</span>
+                                            <span class="driver-value-badge {% if latest.prediction_class %}risk{% else %}pillar{% endif %}">
+                                                {{ driver.value }}
+                                            </span>
+                                        </div>
+                                        <div class="driver-desc">{{ driver.description }}</div>
+                                        <div class="driver-bar-bg">
+                                            {% set raw_pct = (driver.importance / 0.15 * 100)|int %}
+                                            {% set fill_pct = 10 if raw_pct < 10 else (100 if raw_pct > 100 else raw_pct) %}
+                                            <div class="driver-bar-fill {% if latest.prediction_class %}risk{% else %}pillar{% endif %}" style="width: {{ fill_pct }}%;"></div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; margin: 0;">
+                                AI explanations are only available for runs calculated with the latest ML Engine. Click "Calculate Attrition Risk" above to update this profile.
+                            </p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Model Info & Metrics -->
+                    <div class="margin-top">
+                        <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-color);">ML Pipeline Details</div>
+                        <div class="model-metrics-grid">
+                            <div class="metric-stat-item" style="grid-column: span 2;">
+                                <span class="metric-stat-label">Model Type</span>
+                                <span class="metric-stat-val" style="font-size: 0.9rem;">
+                                    {{ latest.features_snapshot.get('_model_name', 'Random Forest Classifier') if latest.features_snapshot else 'Random Forest Classifier' }}
+                                </span>
+                            </div>
+                            <div class="metric-stat-item">
+                                <span class="metric-stat-label">Accuracy</span>
+                                <span class="metric-stat-val">
+                                    {% if latest.features_snapshot and latest.features_snapshot.get('_accuracy') %}
+                                        {{ (latest.features_snapshot.get('_accuracy') * 100)|round(1) }}%
+                                    {% else %}
+                                        84.0%
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="metric-stat-item">
+                                <span class="metric-stat-label">F1-Score</span>
+                                <span class="metric-stat-val">
+                                    {% if latest.features_snapshot and latest.features_snapshot.get('_f1_score') %}
+                                        {{ (latest.features_snapshot.get('_f1_score') * 100)|round(1) }}%
+                                    {% else %}
+                                        89.2%
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if latest.recommended_actions and latest.recommended_actions != "Initial dataset import baseline." %}
+                        <div class="action-recommendations margin-top">
+                            <h4>Recommended Playbooks:</h4>
+                            <ul class="recs-list">
+                                {% for rec in latest.recommended_actions.split('\n') %}
+                                    {% if rec.strip() %}
+                                        <li><i class="fa-solid fa-chevron-right"></i> {{ rec }}</li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="prediction-meta">
+                        Executed on: {{ latest.run_at.strftime('%Y-%m-%d %H:%M') }}
+                    </div>
+                </div>
+            {% else %}
+                <div class="no-prediction-state">
+                    <i class="fa-solid fa-brain"></i>
+                    <p>No attrition prediction has been run for this employee yet. Click the button above to run the predictive algorithm.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.ai-explanation-card {
+    background-color: #f8fafc;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-top: 1.5rem;
+    text-align: left;
+}
+
+.ai-explanation-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.driver-item {
+    margin-bottom: 1rem;
+}
+
+.driver-item:last-child {
+    margin-bottom: 0;
+}
+
+.driver-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.25rem;
+}
+
+.driver-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.driver-value-badge {
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+}
+
+.driver-value-badge.risk {
+    background-color: #fee2e2;
+    color: #ef4444;
+}
+
+.driver-value-badge.pillar {
+    background-color: #dcfce7;
+    color: #22c55e;
+}
+
+.driver-desc {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+    line-height: 1.3;
+}
+
+.driver-bar-bg {
+    height: 6px;
+    background-color: #e2e8f0;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.driver-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.6s ease;
+}
+
+.driver-bar-fill.risk {
+    background-color: #f87171;
+}
+
+.driver-bar-fill.pillar {
+    background-color: #4ade80;
+}
+
+.model-metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+    background: #ffffff;
+    padding: 0.75rem;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    text-align: left;
+}
+
+.metric-stat-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.metric-stat-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.1rem;
+}
+
+.metric-stat-val {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+</style>
+{% endblock %}

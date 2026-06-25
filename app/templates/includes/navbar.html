@@ -1,0 +1,24 @@
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="/" class="nav-logo">
+            <i class="fa-solid fa-chart-line logo-icon"></i>
+            <span>Retain<span class="logo-accent">AI</span></span>
+        </a>
+        <ul class="nav-links">
+            {% if current_user.is_authenticated %}
+                <li><a href="{{ url_for('dashboard.index') }}" class="nav-link"><i class="fa-solid fa-gauge"></i> Dashboard</a></li>
+                <li><a href="{{ url_for('dashboard.cohort_analytics') }}" class="nav-link"><i class="fa-solid fa-people-group"></i> Cohorts</a></li>
+                <li><a href="{{ url_for('dashboard.chat_view') }}" class="nav-link"><i class="fa-solid fa-comment-dots"></i> HR Chat</a></li>
+                <li><a href="{{ url_for('employee.list_employees') }}" class="nav-link"><i class="fa-solid fa-users"></i> Employees</a></li>
+                <li><a href="{{ url_for('prediction.batch') }}" class="nav-link"><i class="fa-solid fa-upload"></i> Batch Upload</a></li>
+                <li><a href="{{ url_for('prediction.history') }}" class="nav-link"><i class="fa-solid fa-clock-rotate-left"></i> History</a></li>
+                <li><a href="{{ url_for('auth.change_password') }}" class="nav-link"><i class="fa-solid fa-key"></i> Password</a></li>
+                <li><a href="{{ url_for('auth.logout') }}" class="nav-link"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+            {% else %}
+                <li><a href="/" class="nav-link active"><i class="fa-solid fa-house"></i> Home</a></li>
+                <li><a href="{{ url_for('auth.login') }}" class="nav-link"><i class="fa-solid fa-right-to-bracket"></i> Login</a></li>
+                <li><a href="{{ url_for('auth.register') }}" class="nav-link"><i class="fa-solid fa-user-plus"></i> Register</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>

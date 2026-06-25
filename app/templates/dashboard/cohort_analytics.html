@@ -1,0 +1,348 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Cohort Analytics - RetainAI{% endblock %}
+
+{% block content %}
+<div class="container-padded">
+    <!-- Header -->
+    <div class="list-header">
+        <div>
+            <h1>Comparative Cohort Analytics</h1>
+            <p>Understand the systematic differences between employees flagged as <strong>High Risk</strong> vs <strong>Low Risk</strong>.</p>
+        </div>
+        <a href="{{ url_for('dashboard.index') }}" class="btn btn-outline">
+            <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Cohort Size Summary Cards -->
+    <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+        <div class="stats-card" style="border-left: 5px solid var(--danger-color); box-shadow: 0 4px 12px rgba(239, 68, 68, 0.08);">
+            <div class="stats-icon danger" style="background-color: var(--danger-light); color: var(--danger-color);"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <div class="stats-info">
+                <h3>High Attrition Risk Cohort</h3>
+                <p class="stats-value" style="color: var(--danger-color);">{{ stats.high.count }}</p>
+                <span class="stats-label" style="font-size: 0.85rem; color: var(--text-muted);">Flagged for retention review</span>
+            </div>
+        </div>
+        
+        <div class="stats-card" style="border-left: 5px solid var(--success-color); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.08);">
+            <div class="stats-icon success" style="background-color: var(--success-light); color: var(--success-color);"><i class="fa-solid fa-shield-halved"></i></div>
+            <div class="stats-info">
+                <h3>Low Attrition Risk Cohort</h3>
+                <p class="stats-value" style="color: var(--success-color);">{{ stats.low.count }}</p>
+                <span class="stats-label" style="font-size: 0.85rem; color: var(--text-muted);">Stable, low-risk workforce segment</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Grid -->
+    <div class="charts-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+        <!-- Chart 1: Financial & Compensation -->
+        <div class="dashboard-card" style="padding: 1.5rem;">
+            <div class="card-header-clean" style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+                <h3 style="font-family: var(--font-heading); font-size: 1.1rem; color: var(--secondary-color);"><i class="fa-solid fa-money-bill-trend-up"></i> Average Monthly Income Comparison</h3>
+            </div>
+            <div style="position: relative; height: 260px;">
+                <canvas id="incomeChart" style="width: 100%; height: 100%; display: block;"></canvas>
+            </div>
+        </div>
+
+        <!-- Chart 2: Engagement & Satisfaction -->
+        <div class="dashboard-card" style="padding: 1.5rem;">
+            <div class="card-header-clean" style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+                <h3 style="font-family: var(--font-heading); font-size: 1.1rem; color: var(--secondary-color);"><i class="fa-solid fa-face-smile"></i> Satisfaction & Engagement (Scale 1-4)</h3>
+            </div>
+            <div style="position: relative; height: 260px;">
+                <canvas id="satisfactionChart" style="width: 100%; height: 100%; display: block;"></canvas>
+            </div>
+        </div>
+
+        <!-- Chart 3: Workplace Friction -->
+        <div class="dashboard-card" style="padding: 1.5rem;">
+            <div class="card-header-clean" style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+                <h3 style="font-family: var(--font-heading); font-size: 1.1rem; color: var(--secondary-color);"><i class="fa-solid fa-hourglass-half"></i> Workplace Friction Factors</h3>
+            </div>
+            <div style="position: relative; height: 260px;">
+                <canvas id="frictionChart" style="width: 100%; height: 100%; display: block;"></canvas>
+            </div>
+        </div>
+
+        <!-- Chart 4: Tenure & Loyalty -->
+        <div class="dashboard-card" style="padding: 1.5rem;">
+            <div class="card-header-clean" style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+                <h3 style="font-family: var(--font-heading); font-size: 1.1rem; color: var(--secondary-color);"><i class="fa-solid fa-calendar-days"></i> Company Tenure Comparisons (Years)</h3>
+            </div>
+            <div style="position: relative; height: 260px;">
+                <canvas id="tenureChart" style="width: 100%; height: 100%; display: block;"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comparative Table -->
+    <div class="dashboard-card" style="padding: 2rem; margin-bottom: 2rem;">
+        <div class="card-header-clean" style="border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+            <h2 style="font-family: var(--font-heading); font-size: 1.3rem; color: var(--secondary-color);"><i class="fa-solid fa-table-columns"></i> Complete Cohort Feature Matrix</h2>
+        </div>
+        <table class="data-table">
+            <thead>
+                <tr style="background-color: var(--bg-color);">
+                    <th>Workforce Metric / Attribute</th>
+                    <th style="color: var(--danger-color); font-weight: 700; text-align: center;">High Attrition Risk Cohort</th>
+                    <th style="color: var(--success-color); font-weight: 700; text-align: center;">Low Attrition Risk Cohort</th>
+                    <th style="text-align: center;">Variance % / Absolute Diff</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="font-semibold">Average Monthly Income</td>
+                    <td style="text-align: center; font-weight: 600;">${{ "{:,.2f}".format(stats.high.avg_income) }}</td>
+                    <td style="text-align: center; font-weight: 600;">${{ "{:,.2f}".format(stats.low.avg_income) }}</td>
+                    <td style="text-align: center; font-weight: 600;" id="diff-income">Calculating...</td>
+                </tr>
+                <tr>
+                    <td class="font-semibold">Overtime Rate (%)</td>
+                    <td style="text-align: center;">{{ stats.high.ot_rate }}%</td>
+                    <td style="text-align: center;">{{ stats.low.ot_rate }}%</td>
+                    <td style="text-align: center; font-weight: 600;" id="diff-ot">Calculating...</td>
+                </tr>
+                <tr>
+                    <td class="font-semibold">Average Job Satisfaction</td>
+                    <td style="text-align: center;">{{ stats.high.avg_satisfaction }} / 4</td>
+                    <td style="text-align: center;">{{ stats.low.avg_satisfaction }} / 4</td>
+                    <td style="text-align: center; font-weight: 600;" id="diff-satisfaction">Calculating...</td>
+                </tr>
+                <tr>
+                    <td class="font-semibold">Average Environment Satisfaction</td>
+                    <td style="text-align: center;">{{ stats.high.avg_env_satisfaction }} / 4</td>
+                    <td style="text-align: center;">{{ stats.low.avg_env_satisfaction }} / 4</td>
+                    <td style="text-align: center; font-weight: 600;" id="diff-env">Calculating...</td>
+                </tr>
+                <tr>
+                    <td class="font-semibold">Average Work-Life Balance</td>
+                    <td style="text-align: center;">{{ stats.high.avg_work_life }} / 4</td>
+                    <td style="text-align: center;">{{ stats.low.avg_work_life }} / 4</td>
+                    <td style="text-align: center; font-weight: 600;" id="diff-balance">Calculating...</td>
+                </tr>
+                <tr>
+                    <td class="font-semibold">Average Distance From Home (miles)</td>
+                    <td style="text-align: center;">{{ stats.high.avg_distance }} mi</td>
+                    <td style="text-align: center;">{{ stats.low.avg_distance }} mi</td>
+                    <td style="text-align: center; font-weight: 600;" id="diff-distance">Calculating...</td>
+                </tr>
+                <tr>
+                    <td class="font-semibold">Average Years at Company</td>
+                    <td style="text-align: center;">{{ stats.high.avg_years }} years</td>
+                    <td style="text-align: center;">{{ stats.low.avg_years }} years</td>
+                    <td style="text-align: center; font-weight: 600;" id="diff-years">Calculating...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Recommendations Playbook -->
+    <div class="dashboard-card info-card" style="border-left: 4px solid var(--primary-color); background-color: #f8fafc; padding: 2rem;">
+        <h3 class="info-title" style="font-family: var(--font-heading); color: var(--secondary-color); font-size: 1.25rem; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+            <i class="fa-solid fa-lightbulb" style="color: var(--warning-color);"></i> Strategic Cohort Insights & Playbook Recommendations
+        </h3>
+        <ul style="list-style: none; padding-left: 0; display: flex; flex-direction: column; gap: 1rem;">
+            {% if stats.high.avg_income < stats.low.avg_income * 0.90 %}
+                <li style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                    <span class="badge danger" style="margin-top: 0.25rem;">Compensation Gap</span>
+                    <div>
+                        <strong>Salary Discrepancy Identified:</strong> High-risk employees average significantly less monthly income than low-risk peers.
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">Recommend reviewing compensation structures for key roles showing salary discrepancies compared to industry standards.</p>
+                    </div>
+                </li>
+            {% endif %}
+            {% if stats.high.ot_rate > stats.low.ot_rate * 1.5 %}
+                <li style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                    <span class="badge danger" style="margin-top: 0.25rem;">Overtime Burnout</span>
+                    <div>
+                        <strong>Elevated Overtime Levels:</strong> The high-risk cohort features an overtime rate of {{ stats.high.ot_rate }}% compared to only {{ stats.low.ot_rate }}% for low-risk.
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">Burnout warning. Limit continuous overtime assignments and introduce compensatory off or project reallocations.</p>
+                    </div>
+                </li>
+            {% endif %}
+            {% if stats.high.avg_satisfaction < stats.low.avg_satisfaction * 0.90 or stats.high.avg_work_life < stats.low.avg_work_life * 0.90 %}
+                <li style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                    <span class="badge warning" style="margin-top: 0.25rem;">Engagement Friction</span>
+                    <div>
+                        <strong>Engagement & Work-Life Deficit:</strong> High-risk employees show lower satisfaction and work-life balance levels.
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">Perform qualitative surveys and schedule check-ins to identify local management friction or structural work schedule problems.</p>
+                    </div>
+                </li>
+            {% endif %}
+            <li style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                <span class="badge success" style="margin-top: 0.25rem;">Standard Playbook</span>
+                <div>
+                    <strong>Proactive Talent Retention Strategy:</strong> Maintain continuous monitoring on the key engagement factors above.
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">Align role advancement timelines and training sessions to boost long-term career growth targets.</p>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Chart Configs
+    Chart.defaults.font.family = "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif";
+    Chart.defaults.font.size = 11;
+    Chart.defaults.color = "#64748b";
+    
+    // Cohort Data variables
+    const highData = {{ stats.high|tojson }};
+    const lowData = {{ stats.low|tojson }};
+    
+    // Table Differences Calculation
+    const incomeDiff = ((highData.avg_income - lowData.avg_income) / lowData.avg_income * 100).toFixed(1);
+    const otDiff = (highData.ot_rate - lowData.ot_rate).toFixed(1);
+    const satDiff = (highData.avg_satisfaction - lowData.avg_satisfaction).toFixed(2);
+    const envDiff = (highData.avg_env_satisfaction - lowData.avg_env_satisfaction).toFixed(2);
+    const balDiff = (highData.avg_work_life - lowData.avg_work_life).toFixed(2);
+    const distDiff = (highData.avg_distance - lowData.avg_distance).toFixed(1);
+    const yearsDiff = (highData.avg_years - lowData.avg_years).toFixed(1);
+    
+    document.getElementById('diff-income').innerHTML = `<span style="color: ${incomeDiff < 0 ? 'var(--danger-color)' : 'var(--success-color)'}">${incomeDiff}%</span>`;
+    document.getElementById('diff-ot').innerHTML = `<span style="color: ${otDiff > 0 ? 'var(--danger-color)' : 'var(--success-color)'}">${otDiff > 0 ? '+' : ''}${otDiff}%</span>`;
+    document.getElementById('diff-satisfaction').innerHTML = `<span style="color: ${satDiff < 0 ? 'var(--danger-color)' : 'var(--success-color)'}">${satDiff < 0 ? '' : '+'}${satDiff}</span>`;
+    document.getElementById('diff-env').innerHTML = `<span style="color: ${envDiff < 0 ? 'var(--danger-color)' : 'var(--success-color)'}">${envDiff < 0 ? '' : '+'}${envDiff}</span>`;
+    document.getElementById('diff-balance').innerHTML = `<span style="color: ${balDiff < 0 ? 'var(--danger-color)' : 'var(--success-color)'}">${balDiff < 0 ? '' : '+'}${balDiff}</span>`;
+    document.getElementById('diff-distance').innerHTML = `<span style="color: ${distDiff > 0 ? 'var(--danger-color)' : 'var(--success-color)'}">${distDiff > 0 ? '+' : ''}${distDiff} mi</span>`;
+    document.getElementById('diff-years').innerHTML = `<span style="color: ${yearsDiff < 0 ? 'var(--danger-color)' : 'var(--success-color)'}">${yearsDiff < 0 ? '' : '+'}${yearsDiff} yrs</span>`;
+
+    // 1. Income Chart
+    const incomeCtx = document.getElementById('incomeChart').getContext('2d');
+    new Chart(incomeCtx, {
+        type: 'bar',
+        data: {
+            labels: ['High Risk Cohort', 'Low Risk Cohort'],
+            datasets: [{
+                label: 'Avg Monthly Income ($)',
+                data: [highData.avg_income, lowData.avg_income],
+                backgroundColor: ['#ef4444', '#10b981'],
+                borderRadius: 8,
+                barThickness: 60
+            }]
+        },
+        options: {
+            devicePixelRatio: (window.devicePixelRatio > 1 ? window.devicePixelRatio : 2),
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    // 2. Satisfaction Grid Chart
+    const satCtx = document.getElementById('satisfactionChart').getContext('2d');
+    new Chart(satCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Job Satisfaction', 'Environment Satisfaction', 'Work-Life Balance', 'Job Involvement'],
+            datasets: [
+                {
+                    label: 'High Risk',
+                    data: [highData.avg_satisfaction, highData.avg_env_satisfaction, highData.avg_work_life, highData.avg_involvement],
+                    backgroundColor: '#ef4444',
+                    borderRadius: 6
+                },
+                {
+                    label: 'Low Risk',
+                    data: [lowData.avg_satisfaction, lowData.avg_env_satisfaction, lowData.avg_work_life, lowData.avg_involvement],
+                    backgroundColor: '#10b981',
+                    borderRadius: 6
+                }
+            ]
+        },
+        options: {
+            devicePixelRatio: (window.devicePixelRatio > 1 ? window.devicePixelRatio : 2),
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { usePointStyle: true, font: { weight: '600' } } }
+            },
+            scales: {
+                y: { min: 0, max: 4, ticks: { stepSize: 1 }, grid: { color: '#f1f5f9' } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    // 3. Friction Factors Chart
+    const frictionCtx = document.getElementById('frictionChart').getContext('2d');
+    new Chart(frictionCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Overtime Rate (%)', 'Distance From Home (miles)'],
+            datasets: [
+                {
+                    label: 'High Risk',
+                    data: [highData.ot_rate, highData.avg_distance],
+                    backgroundColor: '#ef4444',
+                    borderRadius: 6
+                },
+                {
+                    label: 'Low Risk',
+                    data: [lowData.ot_rate, lowData.avg_distance],
+                    backgroundColor: '#10b981',
+                    borderRadius: 6
+                }
+            ]
+        },
+        options: {
+            devicePixelRatio: (window.devicePixelRatio > 1 ? window.devicePixelRatio : 2),
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { usePointStyle: true, font: { weight: '600' } } }
+            },
+            scales: {
+                y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    // 4. Tenure Chart
+    const tenureCtx = document.getElementById('tenureChart').getContext('2d');
+    new Chart(tenureCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Years at Company', 'Years in Current Role', 'Years Since Promotion'],
+            datasets: [
+                {
+                    label: 'High Risk',
+                    data: [highData.avg_years, highData.avg_years_role, highData.avg_years_promotion],
+                    backgroundColor: '#ef4444',
+                    borderRadius: 6
+                },
+                {
+                    label: 'Low Risk',
+                    data: [lowData.avg_years, lowData.avg_years_role, lowData.avg_years_promotion],
+                    backgroundColor: '#10b981',
+                    borderRadius: 6
+                }
+            ]
+        },
+        options: {
+            devicePixelRatio: (window.devicePixelRatio > 1 ? window.devicePixelRatio : 2),
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { usePointStyle: true, font: { weight: '600' } } }
+            },
+            scales: {
+                y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

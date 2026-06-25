@@ -1,0 +1,17 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+
+# Environment files
+.env
+
+# Flask instance folder
+instance/
+
+# OS/editor files
+.DS_Store
+.vscode/

@@ -1,0 +1,38 @@
+RetainAI Dataset Exploration Summary
+=====================================
+
+Total Records: 1200
+Total Features: 35
+
+Target Variable Distribution (Attrition):
+ - Yes: 828 (69.0%)
+ - No: 372 (31.0%)
+
+Top Correlations with Attrition:
+ - JobSatisfaction: -0.2104
+ - WorkLifeBalance: -0.2035
+ - JobInvolvement: -0.1936
+ - EnvironmentSatisfaction: -0.1820
+ - YearsAtCompany: -0.1515
+ - YearsWithCurrManager: -0.1404
+ - YearsInCurrentRole: -0.1278
+ - YearsSinceLastPromotion: -0.1189
+ - MonthlyIncome: -0.1101
+ - DistanceFromHome: 0.0922
+ - TotalWorkingYears: -0.0840
+ - Age: -0.0817
+ - JobLevel: -0.0749
+ - StockOptionLevel: -0.0687
+ - TrainingTimesLastYear: -0.0436
+ - MonthlyRate: 0.0415
+ - PercentSalaryHike: 0.0411
+ - NumCompaniesWorked: 0.0357
+ - Education: 0.0271
+ - HourlyRate: 0.0226
+ - RelationshipSatisfaction: 0.0186
+ - PerformanceRating: 0.0109
+ - DailyRate: -0.0073
+
+Preprocessing configuration:
+ - Numeric columns: ['Age', 'DailyRate', 'DistanceFromHome', 'Education', 'EnvironmentSatisfaction', 'HourlyRate', 'JobInvolvement', 'JobLevel', 'JobSatisfaction', 'MonthlyIncome', 'MonthlyRate', 'NumCompaniesWorked', 'PercentSalaryHike', 'PerformanceRating', 'RelationshipSatisfaction', 'StockOptionLevel', 'TotalWorkingYears', 'TrainingTimesLastYear', 'WorkLifeBalance', 'YearsAtCompany', 'YearsInCurrentRole', 'YearsSinceLastPromotion', 'YearsWithCurrManager']
+ - Categorical columns: ['BusinessTravel', 'Department', 'EducationField', 'Gender', 'JobRole', 'MaritalStatus', 'OverTime']

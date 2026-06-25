@@ -1,0 +1,299 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Add Employee - RetainAI{% endblock %}
+
+{% block content %}
+<div class="form-wrapper">
+    <div class="form-card">
+        <div class="form-header">
+            <h1><i class="fa-solid fa-user-plus"></i> Add Employee Profile</h1>
+            <p>Enter the demographic, job, and engagement features matching the IBM HR dataset (35 features total).</p>
+        </div>
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="" class="attrition-form">
+            <!-- SECTION 1: Core Profile -->
+            <div class="form-section-title"><i class="fa-solid fa-address-card"></i> 1. Core Profile Information</div>
+            
+            <div class="form-row">
+                <div class="form-group flex-1">
+                    <label for="employee_id" class="form-label">Employee ID *</label>
+                    <input type="text" id="employee_id" name="employee_id" class="form-control" placeholder="e.g. EMP001" required>
+                </div>
+                <div class="form-group flex-1">
+                    <label for="employee_number" class="form-label">Employee Number</label>
+                    <input type="number" id="employee_number" name="employee_number" class="form-control" placeholder="e.g. 104">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group flex-1">
+                    <label for="first_name" class="form-label">First Name *</label>
+                    <input type="text" id="first_name" name="first_name" class="form-control" placeholder="Enter first name" required>
+                </div>
+                <div class="form-group flex-1">
+                    <label for="last_name" class="form-label">Last Name *</label>
+                    <input type="text" id="last_name" name="last_name" class="form-control" placeholder="Enter last name" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group flex-1">
+                    <label for="age" class="form-label">Age</label>
+                    <input type="number" id="age" name="age" class="form-control" placeholder="e.g. 35">
+                </div>
+                <div class="form-group flex-1">
+                    <label for="gender" class="form-label">Gender</label>
+                    <select id="gender" name="gender" class="form-control">
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group flex-1">
+                    <label for="marital_status" class="form-label">Marital Status</label>
+                    <select id="marital_status" name="marital_status" class="form-control">
+                        <option value="Single">Single</option>
+                        <option value="Married">Married</option>
+                        <option value="Divorced">Divorced</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- SECTION 2: Professional Experience -->
+            <div class="form-section-title"><i class="fa-solid fa-briefcase"></i> 2. Professional & Job Experience</div>
+
+            <div class="form-row">
+                <div class="form-group flex-1">
+                    <label for="department" class="form-label">Department</label>
+                    <select id="department" name="department" class="form-control">
+                        <option value="Sales">Sales</option>
+                        <option value="Research & Development">Research & Development</option>
+                        <option value="Human Resources">Human Resources</option>
+                    </select>
+                </div>
+                <div class="form-group flex-1">
+                    <label for="job_role" class="form-label">Job Role</label>
+                    <input type="text" id="job_role" name="job_role" class="form-control" placeholder="e.g. Research Scientist">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group flex-1">
+                    <label for="job_level" class="form-label">Job Level (1-5)</label>
+                    <select id="job_level" name="job_level" class="form-control">
+                        <option value="1">1 - Entry Level</option>
+                        <option value="2">2 - Junior</option>
+                        <option value="3">3 - Mid Level</option>
+                        <option value="4">4 - Senior</option>
+                        <option value="5">5 - Executive</option>
+                    </select>
+                </div>
+                <div class="form-group flex-1">
+                    <label for="business_travel" class="form-label">Business Travel</label>
+                    <select id="business_travel" name="business_travel" class="form-control">
+                        <option value="Travel_Rarely">Travel Rarely</option>
+                        <option value="Travel_Frequently">Travel Frequently</option>
+                        <option value="Non-Travel">Non-Travel</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group flex-1">
+                    <label for="years_at_company" class="form-label">Years at Company</label>
+                    <input type="number" id="years_at_company" name="years_at_company" class="form-control" placeholder="e.g. 5">
+                </div>
+                <div class="form-group flex-1">
+                    <label for="years_in_current_role" class="form-label">Years in Current Role</label>
+                    <input type="number" id="years_in_current_role" name="years_in_current_role" class="form-control" placeholder="e.g. 2">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group flex-1">
+                    <label for="years_since_last_promotion" class="form-label">Years Since Last Promotion</label>
+                    <input type="number" id="years_since_last_promotion" name="years_since_last_promotion" class="form-control" placeholder="e.g. 1">
+                </div>
+                <div class="form-group flex-1">
+                    <label for="years_with_curr_manager" class="form-label">Years With Current Manager</label>
+                    <input type="number" id="years_with_curr_manager" name="years_with_curr_manager" class="form-control" placeholder="e.g. 3">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group flex-1">
+                    <label for="total_working_years" class="form-label">Total Working Years</label>
+                    <input type="number" id="total_working_years" name="total_working_years" class="form-control" placeholder="e.g. 10">
+                </div>
+                <div class="form-group flex-1">
+                    <label for="num_companies_worked" class="form-label">Num Companies Worked</label>
+                    <input type="number" id="num_companies_worked" name="num_companies_worked" class="form-control" placeholder="e.g. 2">
+                </div>
+            </div>
+
+            <!-- SECTION 3: Compensation & Rates -->
+            <div class="form-section-title"><i class="fa-solid fa-money-bill-wave"></i> 3. Compensation & Rates</div>
+
+            <div class="form-row">
+                <div class="form-group flex-1">
+                    <label for="monthly_income" class="form-label">Monthly Income ($)</label>
+                    <input type="number" id="monthly_income" name="monthly_income" class="form-control" placeholder="e.g. 6000">
+                </div>
+                <div class="form-group flex-1">
+                    <label for="percent_salary_hike" class="form-label">Percent Salary Hike (%)</label>
+                    <input type="number" id="percent_salary_hike" name="percent_salary_hike" class="form-control" placeholder="e.g. 12">
+                </div>
+                <div class="form-group flex-1">
+                    <label for="stock_option_level" class="form-label">Stock Option Level (0-3)</label>
+                    <input type="number" id="stock_option_level" name="stock_option_level" class="form-control" placeholder="e.g. 1" min="0" max="3">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group flex-1">
+                    <label for="daily_rate" class="form-label">Daily Rate ($)</label>
+                    <input type="number" id="daily_rate" name="daily_rate" class="form-control" placeholder="e.g. 800">
+                </div>
+                <div class="form-group flex-1">
+                    <label for="hourly_rate" class="form-label">Hourly Rate ($)</label>
+                    <input type="number" id="hourly_rate" name="hourly_rate" class="form-control" placeholder="e.g. 80">
+                </div>
+                <div class="form-group flex-1">
+                    <label for="monthly_rate" class="form-label">Monthly Rate ($)</label>
+                    <input type="number" id="monthly_rate" name="monthly_rate" class="form-control" placeholder="e.g. 24000">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group flex-1">
+                    <label for="overtime" class="form-label">Works Overtime?</label>
+                    <select id="overtime" name="overtime" class="form-control">
+                        <option value="false">No</option>
+                        <option value="true">Yes</option>
+                    </select>
+                </div>
+                <div class="form-group flex-1">
+                    <label for="distance_from_home" class="form-label">Distance From Home (miles)</label>
+                    <input type="number" id="distance_from_home" name="distance_from_home" class="form-control" placeholder="e.g. 5">
+                </div>
+            </div>
+
+            <!-- SECTION 4: Engagement & Education -->
+            <div class="form-section-title"><i class="fa-solid fa-graduation-cap"></i> 4. Engagement & Education</div>
+
+            <div class="form-row">
+                <div class="form-group flex-1">
+                    <label for="education" class="form-label">Education Level (1-5)</label>
+                    <select id="education" name="education" class="form-control">
+                        <option value="1">1 - Below College</option>
+                        <option value="2">2 - College</option>
+                        <option value="3">3 - Bachelor</option>
+                        <option value="4">4 - Master</option>
+                        <option value="5">5 - Doctor</option>
+                    </select>
+                </div>
+                <div class="form-group flex-1">
+                    <label for="education_field" class="form-label">Education Field</label>
+                    <select id="education_field" name="education_field" class="form-control">
+                        <option value="Life Sciences">Life Sciences</option>
+                        <option value="Medical">Medical</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Technical Degree">Technical Degree</option>
+                        <option value="Human Resources">Human Resources</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group flex-1">
+                    <label for="job_satisfaction" class="form-label">Job Satisfaction (1-4)</label>
+                    <select id="job_satisfaction" name="job_satisfaction" class="form-control">
+                        <option value="4">4 - Very High</option>
+                        <option value="3">3 - High</option>
+                        <option value="2">2 - Medium</option>
+                        <option value="1">1 - Low</option>
+                    </select>
+                </div>
+                <div class="form-group flex-1">
+                    <label for="work_life_balance" class="form-label">Work Life Balance (1-4)</label>
+                    <select id="work_life_balance" name="work_life_balance" class="form-control">
+                        <option value="4">4 - Excellent</option>
+                        <option value="3">3 - Good</option>
+                        <option value="2">2 - Fair</option>
+                        <option value="1">1 - Poor</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group flex-1">
+                    <label for="environment_satisfaction" class="form-label">Environment Satisfaction (1-4)</label>
+                    <select id="environment_satisfaction" name="environment_satisfaction" class="form-control">
+                        <option value="4">4 - Very High</option>
+                        <option value="3">3 - High</option>
+                        <option value="2">2 - Medium</option>
+                        <option value="1">1 - Low</option>
+                    </select>
+                </div>
+                <div class="form-group flex-1">
+                    <label for="relationship_satisfaction" class="form-label">Relationship Satisfaction (1-4)</label>
+                    <select id="relationship_satisfaction" name="relationship_satisfaction" class="form-control">
+                        <option value="4">4 - Very High</option>
+                        <option value="3">3 - High</option>
+                        <option value="2">2 - Medium</option>
+                        <option value="1">1 - Low</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group flex-1">
+                    <label for="job_involvement" class="form-label">Job Involvement (1-4)</label>
+                    <select id="job_involvement" name="job_involvement" class="form-control">
+                        <option value="4">4 - Very High</option>
+                        <option value="3">3 - High</option>
+                        <option value="2">2 - Medium</option>
+                        <option value="1">1 - Low</option>
+                    </select>
+                </div>
+                <div class="form-group flex-1">
+                    <label for="performance_rating" class="form-label">Performance Rating (1-4)</label>
+                    <select id="performance_rating" name="performance_rating" class="form-control">
+                        <option value="4">4 - Outstanding</option>
+                        <option value="3">3 - Excellent</option>
+                        <option value="2">2 - Good</option>
+                        <option value="1">1 - Low</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group flex-1">
+                    <label for="training_times_last_year" class="form-label">Training Times Last Year</label>
+                    <input type="number" id="training_times_last_year" name="training_times_last_year" class="form-control" placeholder="e.g. 2">
+                </div>
+                <div class="form-group flex-1">
+                    <!-- spacing -->
+                </div>
+            </div>
+
+            <div class="form-submit-row">
+                <a href="{{ url_for('employee.list_employees') }}" class="btn btn-outline">Cancel</a>
+                <button type="submit" class="btn btn-primary">Create Profile</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

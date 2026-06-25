@@ -1,0 +1,74 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Prediction History - RetainAI{% endblock %}
+
+{% block content %}
+<div class="container-padded">
+    <div class="list-header">
+        <div>
+            <h1>Prediction History Log</h1>
+            <p>Review logs of all previous machine learning predictions and recommended retention playbook actions.</p>
+        </div>
+        <a href="{{ url_for('employee.list_employees') }}" class="btn btn-outline">
+            <i class="fa-solid fa-users"></i> Select Employee
+        </a>
+    </div>
+
+    <!-- Predictions History Table -->
+    <div class="dashboard-card list-card">
+        {% if predictions %}
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>Employee ID</th>
+                        <th>Risk Score</th>
+                        <th>Result Class</th>
+                        <th>Recommended Actions Summary</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pred in predictions %}
+                        <tr>
+                            <td class="font-semibold">{{ pred.run_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                            <td>
+                                <a href="{{ url_for('employee.detail', employee_id=pred.employee_id) }}" class="emp-link">
+                                    {{ pred.employee_id }}
+                                </a>
+                            </td>
+                            <td>
+                                <span class="score-badge {% if pred.risk_score >= 0.5 %}high{% else %}low{% endif %}">
+                                    {{ (pred.risk_score * 100)|int }}%
+                                </span>
+                            </td>
+                            <td>
+                                {% if pred.prediction_class %}
+                                    <span class="badge danger">High Risk</span>
+                                {% else %}
+                                    <span class="badge success">Low Risk</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-muted text-sm">
+                                {% if pred.recommended_actions %}
+                                    {{ pred.recommended_actions.split('\n')[0] }}
+                                    {% if pred.recommended_actions.split('\n')|length > 1 %}
+                                        ...
+                                    {% endif %}
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="empty-state">
+                <i class="fa-solid fa-list-check"></i>
+                <p>No attrition prediction records found in the database.</p>
+                <a href="{{ url_for('employee.list_employees') }}" class="btn btn-primary btn-sm">Select Employee to Score</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

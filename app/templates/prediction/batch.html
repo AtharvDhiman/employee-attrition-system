@@ -1,0 +1,357 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Batch Prediction - RetainAI{% endblock %}
+
+{% block content %}
+<div class="container-padded">
+    <div class="list-header">
+        <div>
+            <h1>Batch Prediction & CSV Reports</h1>
+            <p>Upload a CSV file containing multiple employee records to run batch risk assessments and generate downloadable retention reports.</p>
+        </div>
+        <a href="{{ url_for('prediction.download_template') }}" class="btn btn-outline">
+            <i class="fa-solid fa-download"></i> Download CSV Template
+        </a>
+    </div>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="dashboard-card form-card-narrow">
+        <form method="POST" action="{{ url_for('prediction.batch') }}" enctype="multipart/form-data" class="batch-upload-form" id="upload-form">
+            <div class="drop-zone" id="drop-zone">
+                <i class="fa-solid fa-cloud-arrow-up drop-icon"></i>
+                <p class="drop-text">Drag and drop your employee CSV file here</p>
+                <span class="drop-or">or</span>
+                <span class="btn btn-primary btn-sm drop-btn">Browse Files</span>
+                <input type="file" id="csv-file" name="file" accept=".csv" class="file-input" required />
+            </div>
+            
+            <div class="file-details" id="file-details" style="display: none;">
+                <div class="file-info-box">
+                    <i class="fa-regular fa-file-excel file-icon"></i>
+                    <div class="file-meta">
+                        <p class="file-name" id="file-name">filename.csv</p>
+                        <p class="file-size" id="file-size">0 KB</p>
+                    </div>
+                    <button type="button" class="remove-file-btn" id="remove-file"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                
+                <div class="submit-container">
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Process & Predict Attrition
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Instructions / Columns Info -->
+    <div class="dashboard-card info-card margin-top">
+        <h3 class="info-title"><i class="fa-solid fa-circle-info"></i> CSV Formatting Instructions</h3>
+        <p class="info-description">
+            Your CSV must contain an <code>employee_id</code> column (or <code>EmployeeID</code>). Standard alphanumeric IDs are recommended.
+            The system maps columns case-insensitively and handles either snake_case or PascalCase headers.
+        </p>
+        
+        <div class="features-grid-summary">
+            <div class="feature-category">
+                <h4>Required Columns</h4>
+                <ul>
+                    <li><code>employee_id</code> (String, unique identifier)</li>
+                    <li><code>first_name</code> (String, default: "Employee")</li>
+                    <li><code>last_name</code> (String, default: index/number)</li>
+                </ul>
+            </div>
+            <div class="feature-category">
+                <h4>Key ML Features</h4>
+                <ul>
+                    <li><code>age</code> (Integer)</li>
+                    <li><code>department</code> (Sales, Research & Development, Human Resources)</li>
+                    <li><code>job_role</code> (Job Title)</li>
+                    <li><code>monthly_income</code> (Float/Integer compensation)</li>
+                    <li><code>overtime</code> (Yes / No or True / False)</li>
+                    <li><code>job_satisfaction</code> (1-4 score)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.form-card-narrow {
+    max-width: 650px;
+    margin: 0 auto;
+    padding: 2.5rem;
+}
+
+.drop-zone {
+    border: 2px dashed var(--border-color);
+    border-radius: 12px;
+    padding: 3rem 2rem;
+    text-align: center;
+    background-color: var(--bg-color);
+    transition: var(--transition);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.drop-zone:hover, .drop-zone.dragover {
+    border-color: var(--primary-color);
+    background-color: var(--primary-light);
+}
+
+.drop-icon {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.drop-text {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--secondary-color);
+    margin-bottom: 0.5rem;
+}
+
+.drop-or {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin: 0.5rem 0;
+}
+
+.file-input {
+    display: none;
+}
+
+.file-details {
+    margin-top: 1.5rem;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.file-info-box {
+    display: flex;
+    align-items: center;
+    background-color: #f8fafc;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.file-icon {
+    font-size: 2rem;
+    color: #10b981;
+    margin-right: 1rem;
+}
+
+.file-meta {
+    flex-grow: 1;
+}
+
+.file-name {
+    font-weight: 600;
+    color: var(--secondary-color);
+    font-size: 0.95rem;
+}
+
+.file-size {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.remove-file-btn {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.25rem;
+    transition: var(--transition);
+}
+
+.remove-file-btn:hover {
+    color: var(--danger-color);
+}
+
+.info-card {
+    background-color: #f8fafc;
+    border-left: 4px solid var(--primary-color);
+    padding: 1.5rem 2rem;
+}
+
+.info-title {
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    color: var(--secondary-color);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.info-title i {
+    color: var(--primary-color);
+}
+
+.info-description {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+}
+
+.features-grid-summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.feature-category h4 {
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    color: var(--secondary-color);
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.feature-category ul {
+    list-style: none;
+    padding-left: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.feature-category li {
+    font-size: 0.85rem;
+    color: var(--text-color);
+}
+
+.feature-category code {
+    background-color: #e2e8f0;
+    padding: 0.1rem 0.3rem;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.8rem;
+    color: #0f172a;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 576px) {
+    .features-grid-summary {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('csv-file');
+    const fileDetails = document.getElementById('file-details');
+    const fileNameEl = document.getElementById('file-name');
+    const fileSizeEl = document.getElementById('file-size');
+    const removeBtn = document.getElementById('remove-file');
+    
+    // Prevent default drag behaviors
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+        document.body.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    // Highlight drop zone when item is dragged over it
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, highlight, false);
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, unhighlight, false);
+    });
+    
+    // Handle dropped files
+    dropZone.addEventListener('drop', handleDrop, false);
+    
+    // Open file browser on click
+    dropZone.addEventListener('click', () => {
+        fileInput.click();
+    });
+    
+    // Handle file selection via input
+    fileInput.addEventListener('change', function() {
+        if (this.files.length) {
+            showFileDetails(this.files[0]);
+        }
+    });
+    
+    // Remove file
+    removeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        resetFileInput();
+    });
+    
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
+    function highlight() {
+        dropZone.classList.add('dragover');
+    }
+    
+    function unhighlight() {
+        dropZone.classList.remove('dragover');
+    }
+    
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        if (files.length) {
+            fileInput.files = files;
+            showFileDetails(files[0]);
+        }
+    }
+    
+    function showFileDetails(file) {
+        if (!file.name.endsWith('.csv')) {
+            alert('Only CSV files are supported.');
+            resetFileInput();
+            return;
+        }
+        fileNameEl.textContent = file.name;
+        fileSizeEl.textContent = formatBytes(file.size);
+        dropZone.style.display = 'none';
+        fileDetails.style.display = 'block';
+    }
+    
+    function resetFileInput() {
+        fileInput.value = '';
+        fileDetails.style.display = 'none';
+        dropZone.style.display = 'flex';
+    }
+    
+    function formatBytes(bytes, decimals = 2) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const dm = decimals < 0 ? 0 : decimals;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    }
+});
+</script>
+{% endblock %}

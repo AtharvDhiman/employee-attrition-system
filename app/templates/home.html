@@ -1,0 +1,47 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}RetainAI - Employee Attrition Prediction{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="hero-container">
+        <span class="hero-badge"><i class="fa-solid fa-sparkles"></i> Advanced HR Analytics</span>
+        <h1 class="hero-title">Predict Employee Attrition Before It Happens</h1>
+        <p class="hero-subtitle">Empower your HR teams with machine learning insights to identify flight risk, understand key attrition drivers, and build proactive retention strategies.</p>
+        <div class="hero-buttons">
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('dashboard.index') }}" class="btn btn-primary"><i class="fa-solid fa-gauge-high"></i> Go to Dashboard</a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}" class="btn btn-primary"><i class="fa-solid fa-gauge-high"></i> Start Predicting</a>
+            {% endif %}
+            <a href="#features" class="btn btn-outline"><i class="fa-solid fa-circle-play"></i> Key Features</a>
+        </div>
+    </div>
+</div>
+
+<div class="features-section" id="features">
+    <div class="section-container">
+        <div class="section-header">
+            <h2>Key Capabilities</h2>
+            <p>Our intelligent system uses advanced predictive models to help you keep your best talent.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="card-icon"><i class="fa-solid fa-brain"></i></div>
+                <h3>Predictive Scoring</h3>
+                <p>Calculate high-accuracy risk scores for employees based on demographics, role, and satisfaction metrics.</p>
+            </div>
+            <div class="feature-card">
+                <div class="card-icon"><i class="fa-solid fa-chart-line"></i></div>
+                <h3>Key Risk Drivers</h3>
+                <p>Discover which factors (e.g., overtime, commute, compensation) contribute most to attrition risk.</p>
+            </div>
+            <div class="feature-card">
+                <div class="card-icon"><i class="fa-solid fa-arrows-to-eye"></i></div>
+                <h3>Retention Playbooks</h3>
+                <p>Receive recommended actions tailored to individual employee profiles to improve engagement and reduce churn.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

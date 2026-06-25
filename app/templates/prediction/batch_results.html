@@ -1,0 +1,176 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Batch Prediction Results - RetainAI{% endblock %}
+
+{% block content %}
+<div class="container-padded">
+    <div class="list-header">
+        <div>
+            <h1>Batch Prediction Results</h1>
+            <p>Generated report: <strong>{{ summary.filename }}</strong>. Review the aggregate risk metrics and download the report below.</p>
+        </div>
+        <div class="header-actions">
+            <a href="{{ url_for('prediction.download_report', filename=summary.filename) }}" class="btn btn-primary">
+                <i class="fa-solid fa-download"></i> Download CSV Report
+            </a>
+            <a href="{{ url_for('prediction.batch') }}" class="btn btn-outline">
+                <i class="fa-solid fa-upload"></i> Process Another Batch
+            </a>
+        </div>
+    </div>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Metrics and Chart Row -->
+    <div class="profile-layout">
+        <!-- Summary Stats Card -->
+        <div class="profile-card">
+            <div class="card-header-clean">
+                <h2>Batch Analytics Summary</h2>
+            </div>
+            
+            <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1rem; margin-top: 1rem; margin-bottom: 2rem;">
+                <div class="stats-card">
+                    <div class="stats-info">
+                        <h3>Total Scored</h3>
+                        <p class="stats-value" style="font-size: 1.8rem;">{{ summary.total_count }}</p>
+                    </div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-info">
+                        <h3>High Risk</h3>
+                        <p class="stats-value" style="font-size: 1.8rem; color: var(--danger-color);">{{ summary.high_risk_count }}</p>
+                    </div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-info">
+                        <h3>High Risk Rate</h3>
+                        <p class="stats-value" style="font-size: 1.8rem;">{{ summary.high_risk_rate }}%</p>
+                    </div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-info">
+                        <h3>Avg Risk Score</h3>
+                        <p class="stats-value" style="font-size: 1.8rem;">{{ summary.avg_risk_score }}%</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table of Records -->
+            <div class="table-container" style="overflow-x: auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Employee ID</th>
+                            <th>Name</th>
+                            <th>Department</th>
+                            <th>Job Role</th>
+                            <th>Risk Score</th>
+                            <th>Risk Class</th>
+                            <th class="text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in records %}
+                            <tr>
+                                <td class="font-semibold">{{ row.employee_id }}</td>
+                                <td>{{ row.full_name }}</td>
+                                <td>{{ row.department }}</td>
+                                <td>{{ row.job_role }}</td>
+                                <td>
+                                    <span class="score-badge {% if row.risk_score >= 0.5 %}high{% else %}low{% endif %}">
+                                        {{ (row.risk_score * 100)|int }}%
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if row.risk_category == 'High Risk' %}
+                                        <span class="badge danger">High Risk</span>
+                                    {% else %}
+                                        <span class="badge success">Low Risk</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-right">
+                                    <a href="{{ url_for('employee.detail', employee_id=row.employee_id) }}" class="btn-action">
+                                        <i class="fa-solid fa-eye"></i> Profile
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Attrition Chart Panel -->
+        <div class="prediction-card">
+            <div class="card-header-clean">
+                <h2>Risk Distribution</h2>
+            </div>
+            
+            <div class="radial-score-wrapper" style="background: none; border: none; padding: 0;">
+                <div style="position: relative; width: 100%; height: 260px;">
+                    <canvas id="riskDoughnut" style="width: 100%; height: 100%; display: block;"></canvas>
+                </div>
+                
+                <div class="prediction-meta" style="margin-top: 1.5rem; font-weight: 600;">
+                    <p style="color: var(--danger-color); margin-bottom: 0.25rem;">
+                        <i class="fa-solid fa-circle"></i> High Risk: {{ summary.high_risk_count }} employees
+                    </p>
+                    <p style="color: var(--success-color);">
+                        <i class="fa-solid fa-circle"></i> Low Risk: {{ summary.low_risk_count }} employees
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    Chart.defaults.devicePixelRatio = (window.devicePixelRatio > 1 ? window.devicePixelRatio : 2);
+    Chart.defaults.font.family = "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif";
+    Chart.defaults.font.size = 12;
+    Chart.defaults.color = "#475569";
+    
+    const ctx = document.getElementById('riskDoughnut').getContext('2d');
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['High Risk', 'Low Risk'],
+            datasets: [{
+                data: [{{ summary.high_risk_count }}, {{ summary.low_risk_count }}],
+                backgroundColor: ['#ef4444', '#10b981'],
+                borderWidth: 2,
+                borderColor: '#ffffff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            devicePixelRatio: (window.devicePixelRatio > 1 ? window.devicePixelRatio : 2),
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 15,
+                        font: { weight: '600' }
+                    }
+                }
+            },
+            cutout: '70%'
+        }
+    });
+});
+</script>
+{% endblock %}

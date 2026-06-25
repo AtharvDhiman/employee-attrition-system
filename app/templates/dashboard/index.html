@@ -1,0 +1,246 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Dashboard - RetainAI{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper">
+    <div class="dashboard-header">
+        <h1>HR Analytics Dashboard</h1>
+        <p>Overview of organizational flight risks and employee metadata.</p>
+    </div>
+    
+    <!-- Stats Cards Grid -->
+    <div class="stats-grid">
+        <div class="stats-card">
+            <div class="stats-icon primary"><i class="fa-solid fa-users"></i></div>
+            <div class="stats-info">
+                <h3>Total Employees</h3>
+                <p class="stats-value">{{ total_employees }}</p>
+            </div>
+        </div>
+        
+        <div class="stats-card">
+            <div class="stats-icon warning"><i class="fa-solid fa-calculator"></i></div>
+            <div class="stats-info">
+                <h3>Predictions Run</h3>
+                <p class="stats-value">{{ total_predictions }}</p>
+            </div>
+        </div>
+        
+        <div class="stats-card">
+            <div class="stats-icon danger"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <div class="stats-info">
+                <h3>At Attrition Risk</h3>
+                <p class="stats-value">{{ high_risk_count }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions & Recent Predictions -->
+    <div class="dashboard-sections">
+        <div class="dashboard-left">
+            <div class="dashboard-card recent-activity">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-clock-rotate-left"></i> Recent Attrition Runs</h2>
+                    <a href="{{ url_for('prediction.history') }}" class="view-all-link">View History</a>
+                </div>
+                <div class="card-body">
+                    {% if recent_predictions %}
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Employee ID</th>
+                                    <th>Risk Score</th>
+                                    <th>Risk Category</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for pred in recent_predictions %}
+                                    <tr>
+                                        <td>
+                                            <a href="{{ url_for('employee.detail', employee_id=pred.employee_id) }}" class="emp-link">
+                                                {{ pred.employee_id }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <span class="score-badge {% if pred.risk_score >= 0.5 %}high{% else %}low{% endif %}">
+                                                {{ (pred.risk_score * 100)|int }}%
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% if pred.prediction_class %}
+                                                <span class="badge danger">High Risk</span>
+                                            {% else %}
+                                                <span class="badge success">Low Risk</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ pred.run_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fa-solid fa-folder-open"></i>
+                            <p>No predictions run yet.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Attrition Charts Card -->
+            <div class="dashboard-card margin-top">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-chart-pie"></i> Attrition Risk Analytics</h2>
+                </div>
+                <div class="card-body charts-container">
+                    <div class="chart-box">
+                        <h3>Risk by Department</h3>
+                        <div class="chart-canvas-wrapper">
+                            <canvas id="deptChart" style="width: 100%; height: 100%; display: block;"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-box">
+                        <h3>Overtime Impact on Risk</h3>
+                        <div class="chart-canvas-wrapper">
+                            <canvas id="otChart" style="width: 100%; height: 100%; display: block;"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-box">
+                        <h3>Risk vs Job Satisfaction</h3>
+                        <div class="chart-canvas-wrapper">
+                            <canvas id="satChart" style="width: 100%; height: 100%; display: block;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-card quick-actions">
+            <div class="card-header">
+                <h2><i class="fa-solid fa-bolt"></i> Quick Actions</h2>
+            </div>
+            <div class="card-body actions-list">
+                <a href="{{ url_for('employee.list_employees') }}" class="action-btn">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span>Manage Employees</span>
+                </a>
+                <a href="{{ url_for('employee.add_employee') }}" class="action-btn">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <span>Add New Employee</span>
+                </a>
+                <a href="{{ url_for('prediction.history') }}" class="action-btn">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Prediction Logs</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js Libraries & Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Set Chart.js global defaults for sharp, premium typography
+        Chart.defaults.devicePixelRatio = (window.devicePixelRatio > 1 ? window.devicePixelRatio : 2);
+        Chart.defaults.font.family = "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif";
+        Chart.defaults.font.size = 12;
+        Chart.defaults.color = "#475569";
+        Chart.defaults.plugins.legend.labels.usePointStyle = true;
+        Chart.defaults.plugins.legend.labels.padding = 15;
+
+        // Chart 1: Department Attrition
+        const deptCtx = document.getElementById('deptChart').getContext('2d');
+        new Chart(deptCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ departments|tojson }},
+                datasets: [{
+                    label: 'At Attrition Risk',
+                    data: {{ dept_counts|tojson }},
+                    backgroundColor: ['#3b82f6', '#10b981', '#ef4444'],
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                devicePixelRatio: (window.devicePixelRatio > 1 ? window.devicePixelRatio : 2),
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { 
+                    legend: { display: false }
+                },
+                scales: { 
+                    y: { 
+                        beginAtZero: true, 
+                        ticks: { precision: 0, font: { weight: '600' } },
+                        grid: { color: '#f1f5f9' }
+                    },
+                    x: {
+                        ticks: { font: { weight: '600' } },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        // Chart 2: Overtime Attrition
+        const otCtx = document.getElementById('otChart').getContext('2d');
+        new Chart(otCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Overtime', 'No Overtime'],
+                datasets: [{
+                    data: {{ ot_counts|tojson }},
+                    backgroundColor: ['#ef4444', '#10b981'],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                devicePixelRatio: (window.devicePixelRatio > 1 ? window.devicePixelRatio : 2),
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { 
+                    legend: { 
+                        position: 'bottom',
+                        labels: { font: { weight: '600' } }
+                    } 
+                },
+                cutout: '65%'
+            }
+        });
+
+        // Chart 3: Job Satisfaction vs Attrition
+        const satCtx = document.getElementById('satChart').getContext('2d');
+        new Chart(satCtx, {
+            type: 'polarArea',
+            data: {
+                labels: ['1-Low', '2-Med', '3-High', '4-Very High'],
+                datasets: [{
+                    data: {{ sat_counts|tojson }},
+                    backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981']
+                }]
+            },
+            options: {
+                devicePixelRatio: (window.devicePixelRatio > 1 ? window.devicePixelRatio : 2),
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { 
+                    legend: { 
+                        position: 'bottom',
+                        labels: { font: { weight: '600' } }
+                    } 
+                },
+                scales: {
+                    r: {
+                        ticks: { display: false },
+                        grid: { color: '#f1f5f9' }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

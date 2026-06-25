@@ -1,0 +1,3 @@
+employee_id,full_name,department,job_role,monthly_income,overtime,risk_score,risk_category,recommended_actions
+EMP9003,Charlie Brown,Human Resources,N/A,0.0,Yes,0.973079241133548,High Risk,Reduce overtime load where possible to prevent burnout.
+EMP9004,David Miller,Research & Development,N/A,0.0,No,0.9928219995306519,High Risk,Continue standard engagement and positive reinforcement.
