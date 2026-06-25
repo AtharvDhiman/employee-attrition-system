@@ -1206,6 +1206,10 @@ main {
     }
 }
 
+.prediction-action-block form {
+    width: 100%;
+}
+
 @media (max-width: 576px) {
     .container-padded, .dashboard-wrapper {
         padding: 2rem 1.25rem;
@@ -1221,5 +1225,23 @@ main {
     }
     .section-header h2 {
         font-size: 1.85rem;
+    }
+    .profile-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 2rem;
+    }
+    .section-header h2 {
+        font-size: 1.65rem;
+    }
+    .list-header h1, .dashboard-header h1 {
+        font-size: 1.75rem;
     }
 }
